@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from .forms import NumberForm
+from django.shortcuts import render
 from pymongo import MongoClient
 
 def home(request):
@@ -15,12 +15,11 @@ def home(request):
             c = float(request.POST.get("c"))
             d = float(request.POST.get("d"))
             e = float(request.POST.get("e"))
-
             numbers = [a, b, c, d, e]
 
-            # Validation
+            # Warnings and checks
             if any(n < 0 for n in numbers):
-                warning = "Warning: Some numbers are negative."
+                warning = "Warning: One or more values are negative."
 
             avg = sum(numbers) / len(numbers)
             avg_check = "Above 50" if avg > 50 else "50 or Below"
@@ -28,12 +27,12 @@ def home(request):
             bitwise = ["Even" if int(n) & 1 == 0 else "Odd" for n in numbers]
             greater_than_10 = sorted([n for n in numbers if n > 10])
 
-            # MongoDB connection
+            # Connect to MongoDB (use PRIVATE IP)
             client = MongoClient("mongodb://admin:password@172.31.67.166:27017/")
-            db = client["mydatabase"]
+            db = client["assignment6"]
             col = db["results"]
 
-            # Prepare safe stringified data
+            # Prepare data
             data = {
                 "original": [str(n) for n in numbers],
                 "sorted": [str(n) for n in greater_than_10],
@@ -42,19 +41,15 @@ def home(request):
                 "positive_count": str(positive_count),
                 "bitwise": bitwise
             }
+
+            # Insert into MongoDB
             col.insert_one(data)
 
-            # Send results to template
-            result = {
-                "original": numbers,
-                "sorted": greater_than_10,
-                "average": avg,
-                "avg_check": avg_check,
-                "positive_count": positive_count,
-                "bitwise": bitwise
-            }
+            # Send to template
+            result = data
 
         except ValueError:
             warning = "Please enter valid numeric values only."
 
     return render(request, "bitwise/home.html", {"form": form, "result": result, "warning": warning})
+
