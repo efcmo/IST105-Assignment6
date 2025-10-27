@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment 6 – Bitwise Logic</title>
+</head>
+<body>
+    <h2>Enter Five Numbers</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if warning %}
+        <p style="color:red;">{{ warning }}</p>
+    {% endif %}
+
+    {% if result %}
+        <hr>
+        <h3>Results:</h3>
+        <p><b>Original Values:</b> {{ result.original }}</p>
+        <p><b>Sorted Values (greater than 10):</b> {{ result.sorted }}</p>
+        <p><b>Average:</b> {{ result.average }}</p>
+        <p><b>Average Check:</b> {{ result.avg_check }}</p>
+        <p><b>Count of Positive Numbers:</b> {{ result.positive_count }}</p>
+        <p><b>Bitwise Even/Odd:</b> {{ result.bitwise }}</p>
+    {% endif %}
+</body>
+</html>
